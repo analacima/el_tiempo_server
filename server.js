@@ -77,6 +77,47 @@ app.get('/api/prediccion/diaria/:municipioId', async (req, res) => {
     }
 });
 
-app.listen(3001, () => {
-    console.log(`Servidor proxy ejecutándose en el puerto 3001`);
-});
+const startServer = async () => {
+    const ports = [3001, 3002, 3003, 3004, 3005];
+    const PORT = process.env.PORT || ports[0];
+
+    // Si estamos en Render, usa el puerto proporcionado por la plataforma
+    if (process.env.PORT) {
+        app.listen(PORT, () => {
+            console.log(`Servidor proxy ejecutándose en el puerto ${PORT}`);
+        });
+        return;
+    }
+
+    // En desarrollo, intenta diferentes puertos si el principal está ocupado
+    for (const port of ports) {
+        try {
+            await new Promise((resolve, reject) => {
+                const server = app.listen(port)
+                    .once('listening', () => {
+                        console.log(`Servidor proxy ejecutándose en el puerto ${port}`);
+                        resolve();
+                    })
+                    .once('error', (err) => {
+                        if (err.code === 'EADDRINUSE') {
+                            console.log(`Puerto ${port} en uso, intentando siguiente...`);
+                            reject(err);
+                        } else {
+                            console.error(`Error al iniciar servidor en puerto ${port}:`, err);
+                            reject(err);
+                        }
+                    });
+            });
+            break; // Si llegamos aquí, el servidor se inició correctamente
+        } catch (err) {
+            if (port === ports[ports.length - 1]) {
+                console.error('No se pudo iniciar el servidor en ningún puerto disponible');
+                process.exit(1);
+            }
+            // Continúa con el siguiente puerto
+            continue;
+        }
+    }
+};
+
+startServer();
