@@ -1,0 +1,1 @@
+{\n  "name": "el_tiempo_server",\n  "version": "1.0.0",\n  "type": "module",\n  "scripts": {\n    "start": "node server.js"\n  },\n  "dependencies": {\n    "cors": "^2.8.5",\n    "express": "^4.21.2",\n    "node-fetch": "^3.3.2"\n  }\n}
