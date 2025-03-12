@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 const app = express();
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://analacima.github.io'],
+  origin: ['http://localhost:5173', 'https://analacima.github.io', 'https://analacima.github.io/el_tiempo'],
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true
 }));
